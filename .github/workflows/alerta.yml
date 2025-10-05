@@ -1,4 +1,4 @@
-name: CI - Alerta DevOps ITLA
+name: CI/CD - Electiva 2 DevOps
 
 on:
   push:
@@ -6,24 +6,35 @@ on:
       - main
 
 jobs:
-  build-and-notify:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout del repositorio
-        uses: actions/checkout@v3
+      - name: 🧭 Checkout del repositorio
+        uses: actions/checkout@v4
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+      - name: ⚙️ Configurar entorno
+        run: echo "Configurando entorno de trabajo..."
 
-      - name: Ejecutar programa Hola Mundo
-        run: node app.js
+      - name: 🧪 Ejecutar build
+        run: echo "Simulación de build exitosa ✅"
 
-      - name: Notificar a ntfy.sh
+      - name: 📢 Notificar a ntfy.sh
         run: |
-          STATUS="Build Completado con Éxito"
-          MESSAGE="CI/CD - Electiva 2 DevOps%0A%0ABuild EXITOSO ✅%0A%0AEstudiante: Enmanuel Ferreras (2024-0189)%0ACurso: Electiva 2 - DevOps%0AProfesor: Elvys Cruz%0A%0ARepositorio: ${{ github.repository }}%0ARama: main%0ACommit: ${{ github.sha }}%0AAutor: ${{ github.actor }}%0A%0AMensaje: ${{ github.event.head_commit.message }}%0A%0AVer detalles: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          MESSAGE="✅ Build EXITOSO
           
-          curl -d "$MESSAGE" -H "Title: $STATUS" -H "Priority: default" -H "Tags: github,ci,devops,itla" https://ntfy.sh/devops-itla
+          Estudiante: Enmanuel Ferreras (2024-0189)
+          Curso: Electiva 2 - DevOps
+          Profesor: Elvys Cruz
+
+          Repositorio: ${{ github.repository }}
+          Rama: ${{ github.ref_name }}
+          Commit: ${{ github.sha }}
+          Autor: ${{ github.actor }}
+
+          Mensaje: ${{ github.event.head_commit.message }}
+
+          Ver detalles: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -d "$MESSAGE" ntfy.sh/devops-itla
+
