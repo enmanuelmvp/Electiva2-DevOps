@@ -1,0 +1,29 @@
+name: CI - Alerta DevOps ITLA
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Ejecutar programa Hola Mundo
+        run: node app.js
+
+      - name: Notificar a ntfy.sh
+        run: |
+          STATUS="Build Completado con Éxito"
+          MESSAGE="CI/CD - Electiva 2 DevOps%0A%0ABuild EXITOSO ✅%0A%0AEstudiante: Enmanuel Ferreras (2024-0189)%0ACurso: Electiva 2 - DevOps%0AProfesor: Elvys Cruz%0A%0ARepositorio: ${{ github.repository }}%0ARama: main%0ACommit: ${{ github.sha }}%0AAutor: ${{ github.actor }}%0A%0AMensaje: ${{ github.event.head_commit.message }}%0A%0AVer detalles: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          curl -d "$MESSAGE" -H "Title: $STATUS" -H "Priority: default" -H "Tags: github,ci,devops,itla" https://ntfy.sh/devops-itla
