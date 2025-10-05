@@ -1,4 +1,4 @@
-name: CI/CD - Electiva 2 DevOps
+name: CI - Alerta DevOps ITLA
 
 on:
   push:
@@ -6,35 +6,36 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-notify:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 🧭 Checkout del repositorio
-        uses: actions/checkout@v4
+      - name: 📦 Checkout del repositorio
+        uses: actions/checkout@v3
 
-      - name: ⚙️ Configurar entorno
-        run: echo "Configurando entorno de trabajo..."
+      - name: 🧠 Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-      - name: 🧪 Ejecutar build
-        run: echo "Simulación de build exitosa ✅"
-
-      - name: 📢 Notificar a ntfy.sh
+      - name: 🚀 Ejecutar programa Hola Mundo
         run: |
-          MESSAGE="✅ Build EXITOSO
-          
-          Estudiante: Enmanuel Ferreras (2024-0189)
-          Curso: Electiva 2 - DevOps
-          Profesor: Elvys Cruz
+          echo "console.log('Hola Mundo - Integración Continua funcionando correctamente');" > app.js
+          node app.js
 
-          Repositorio: ${{ github.repository }}
-          Rama: ${{ github.ref_name }}
-          Commit: ${{ github.sha }}
-          Autor: ${{ github.actor }}
+      - name: ✅ Notificar a ntfy.sh (Build Completado con Éxito)
+        if: success()
+        run: |
+          curl -H "Title: Build Completado con Éxito" \
+               -H "Tags: success" \
+               -d $'El programa Hola Mundo se ejecutó correctamente y todos los tests pasaron.\n\nIntegración Continua funcionando perfectamente!' \
+               https://ntfy.sh/devops-itla
 
-          Mensaje: ${{ github.event.head_commit.message }}
+      - name: ❌ Notificar a ntfy.sh (Build Fallido)
+        if: failure()
+        run: |
+          curl -H "Title: Build Fallido" \
+               -H "Tags: error" \
+               -d $'El build de la integración continua ha fallado.\n\nRevisa los logs en GitHub Actions para más detalles.' \
+               https://ntfy.sh/devops-itla
 
-          Ver detalles: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-          curl -d "$MESSAGE" ntfy.sh/devops-itla
 
